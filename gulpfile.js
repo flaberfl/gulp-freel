@@ -25,8 +25,36 @@ let path = {
   clean: "./" + project_folder + "/"
 }
 
+// ПЕРЕМЕННЫЕ с ФУНКЦИЯМИ
+
 let {
   src,
   dest
 } = require('gulp'),
   gulp = require('gulp'),
+  browsersync = require("browser-sync").create();
+
+
+function browserSync(params) {
+  browsersync.init({
+    server: {
+      baseDir: "./" + project_folder + "/"
+    },
+    port: 3000,
+    notify: false
+  })
+}
+
+function html() {
+  return src(path.src.html)
+    .pipe(dest(path.build.html))
+    .pipe(browsersync.stream())
+}
+
+let build = gulp.series(html);
+let watch = gulp.parallel(build, browserSync);
+
+exports.html = html;
+exports.buld = build;
+exports.watch = watch;
+exports.default = watch;
