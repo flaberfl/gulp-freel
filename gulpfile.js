@@ -10,7 +10,7 @@ let path = {
     fonts: project_folder + "/fonts/",
   },
   src: {
-    html: source_folder + "/*.html",
+    html: [source_folder + "/*.html", "!"+ source_folder + "/_*.html"],
     css: source_folder + "/scss/style.scss",
     js: source_folder + "/js/script.js",
     img: source_folder + "/img/**/*.{jpg,png,svg,gif,ico,webp}",
@@ -32,7 +32,8 @@ let {
   dest
 } = require('gulp'),
   gulp = require('gulp'),
-  browsersync = require("browser-sync").create();
+  browsersync = require("browser-sync").create(),
+  fileinclude = require("gulp-file-include"); // Переменная плагина сборки файлов HTML
 
 
 function browserSync(params) {
@@ -47,12 +48,17 @@ function browserSync(params) {
 
 function html() {
   return src(path.src.html)
-    .pipe(dest(path.build.html))
-    .pipe(browsersync.stream())
+    .pipe(fileinclude()) // Подключаем плагин сборки файлов HTML
+    .pipe(dest(path.build.html)) // Кидаем файлы HTML в dist
+    .pipe(browsersync.stream()) // Обновляем браузер
+}
+
+function watchFiles(arguments) { // Функция слежки за файлами
+  gulp.watch([path.watch.html], html); // Слежка за HTML файлами
 }
 
 let build = gulp.series(html);
-let watch = gulp.parallel(build, browserSync);
+let watch = gulp.parallel(build, watchFiles, browserSync);  // Сценарий выполнения функций
 
 exports.html = html;
 exports.buld = build;
