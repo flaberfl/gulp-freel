@@ -108,13 +108,17 @@ function js() {
 
 function images() {
   return src(path.src.img)
-    .pipe(dest(path.build.img))
     .pipe(
       imagemin({
         progressive: true,
-        svgoPlagins
+        svgoPlugins: [{
+          removeViewBox: false
+        }],
+        interlaced: true,
+        optimizationlevel: 3
       })
     )
+    .pipe(dest(path.build.img))
     .pipe(browsersync.stream()) // Обновляем браузер
 }
 
@@ -122,15 +126,17 @@ function watchFiles(arguments) { // Функция слежки за файла�
   gulp.watch([path.watch.html], html); // Слежка за HTML файлами
   gulp.watch([path.watch.css], css); // Слежка за CSS файлами
   gulp.watch([path.watch.js], js);
+  gulp.watch([path.watch.img], images);
 }
 
 function clean(arguments) {
   return del(path.clean);
 }
 
-let build = gulp.series(clean, gulp.parallel(js, css, html));
+let build = gulp.series(clean, gulp.parallel(js, css, html, images));
 let watch = gulp.parallel(build, watchFiles, browserSync); // Сценарий выполнения функций
 
+exports.images = images;
 exports.js = js;
 exports.css = css;
 exports.html = html;
