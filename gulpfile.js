@@ -42,7 +42,10 @@ let {
   clean_css = require("gulp-clean-css"),
   rename = require("gulp-rename"),
   uglify = require("gulp-uglify-es").default,
-  imagemin = require("gulp-imagemin");
+  imagemin = require("gulp-imagemin"),
+  webp = require("gulp-webp"),
+  webphtml = require("gulp-webp-html"),
+  htmlmin = require('gulp-htmlmin');
 
 
 
@@ -59,6 +62,8 @@ function browserSync(params) {
 function html() {
   return src(path.src.html)
     .pipe(fileinclude()) // Подключаем плагин сборки файлов HTML
+    //.pipe(webphtml())
+    .pipe(htmlmin({ collapseWhitespace: true }))
     .pipe(dest(path.build.html)) // Кидаем файлы HTML в dist
     .pipe(browsersync.stream()) // Обновляем браузер
 }
@@ -108,6 +113,13 @@ function js() {
 
 function images() {
   return src(path.src.img)
+    .pipe(
+      webp({
+        quality: 70
+      })
+    )
+    .pipe(dest(path.build.img))
+    .pipe (src(path.src.img))
     .pipe(
       imagemin({
         progressive: true,
