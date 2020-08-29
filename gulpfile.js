@@ -45,7 +45,7 @@ let {
   imagemin = require("gulp-imagemin"),
   webp = require("gulp-webp"),
   webphtml = require("gulp-webp-html"),
-  htmlmin = require('gulp-htmlmin');
+  webpcss = require("gulp-webpcss");
 
 
 
@@ -62,8 +62,7 @@ function browserSync(params) {
 function html() {
   return src(path.src.html)
     .pipe(fileinclude()) // Подключаем плагин сборки файлов HTML
-    //.pipe(webphtml())
-    .pipe(htmlmin({ collapseWhitespace: true }))
+    .pipe(webphtml())
     .pipe(dest(path.build.html)) // Кидаем файлы HTML в dist
     .pipe(browsersync.stream()) // Обновляем браузер
 }
@@ -84,6 +83,7 @@ function css() {
         cascade: true
       })
     )
+    .pipe(webpcss({webpClass: '.webp',noWebpClass: '.no-webp'}))
     .pipe(dest(path.build.css)) // Выгружаем файл CSS
     .pipe(clean_css()) // Сжимаем файл CSS
     .pipe(
@@ -119,7 +119,7 @@ function images() {
       })
     )
     .pipe(dest(path.build.img))
-    .pipe (src(path.src.img))
+    .pipe(src(path.src.img))
     .pipe(
       imagemin({
         progressive: true,
