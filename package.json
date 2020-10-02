@@ -1,7 +1,7 @@
 {
   "name": "gulp-freel",
   "version": "1.0.0",
-  "description": "Сборочка",
+  "description": "sborka",
   "author": "Andrew.Flaber",
   "devDependencies": {
     "browser-sync": "^2.26.12",
